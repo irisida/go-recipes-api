@@ -9,3 +9,7 @@ Project is using the GitFlow approach. You can read more about that [here](https
 #### Onboarding
 
 If joining the development team on this project you should clone the repository to you local setup and run the `go mod download` command to install required dependencies after completing the cloning.
+
+#### Swagger/OpenAPI
+- generate new document with: `swagger generate spec -o ./swagger.json`
+- serve document with: `swagger serve ./swagger.json`
