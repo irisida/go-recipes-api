@@ -1,0 +1,112 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a sample API covering fairly simple endpoints in a\nrecipes domain.",
+    "title": "Recipes API",
+    "contact": {
+      "name": "Ed Leonard",
+      "email": "edward.leonard@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "host": "localhost:8080",
+  "paths": {
+    "/recipes": {
+      "get": {
+        "description": "Returns list of recipes",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "listRecipes",
+        "responses": {}
+      },
+      "post": {
+        "description": "Creates a new recipe",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "NewRecipe",
+        "responses": {}
+      }
+    },
+    "/recipes/search?tag={tag}": {
+      "get": {
+        "description": "Searches existing recipes and returns matches basedon the\ntag that is passed as the search criteria",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "SearchRecipes",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "string to use as a search criteria against a recies tags",
+            "name": "tag",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/recipes/{id}": {
+      "put": {
+        "description": "Update an existing recipe",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "UpdateRecipe",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the recipe to be updated",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      },
+      "delete": {
+        "description": "Deletes an existing recipe",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "DeleteRecipe",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the recipe to be deleted",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {}
+      }
+    }
+  }
+}
