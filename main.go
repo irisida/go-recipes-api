@@ -27,6 +27,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	handlers "github.com/irisida/go-recipes-api/handlers"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -35,32 +36,27 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// swagger:parameters recipes newRecipe
-type Recipe struct {
-	ID           primitive.ObjectID `json:"id" bson:"_id"`
-	Name         string             `json:"name" bson:"name"`
-	Tags         []string           `json:"tags" bson:"tags"`
-	Ingredients  []string           `json:"ingredients" bson:"ingredients"`
-	Instructions []string           `json:"instructions" bson:"instructions"`
-	PublishedAt  time.Time          `json:"publishedAt" bson:"publishedAt"`
-}
+var recipesHandler *handlers.RecipesHandler
 
-var recipes []Recipe
+//var recipes []Recipe
 
 //mongoDB
-var ctx context.Context
-var err error
-var client *mongo.Client
+//var ctx context.Context
+//var err error
+
+//var client *mongo.Client
 
 func init() {
 	// mongoDB client connection
 	ctx := context.Background()
-	client, err = mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(os.Getenv("MONGO_URI")))
 	if err = client.Ping(context.TODO(), readpref.Primary()); err != nil {
 		log.Fatal(err)
 	}
 
 	log.Println("Successfully Connected to MongoDB")
+	collection := client.Database(os.Getenv("MONGO_DATABASE")).Collection("recipes")
+	recipesHandler = handlers.NewRecipesHandler(ctx, collection)
 }
 
 // swagger:operation GET /recipes recipes listRecipes
@@ -256,11 +252,11 @@ func main() {
 	router := gin.Default()
 
 	// routes
-	router.GET("/recipes", ListRecipesHandler)
-	router.POST("/recipes", NewRecipeHandler)
-	router.PUT("/recipes/:id", UpdateRecipeHandler)
-	router.DELETE("/recipes/:id", DeleteRecipeHandler)
-	router.GET("/recipes/search", SearchRecipesHandler)
+	router.GET("/recipes", recipesHandler.ListRecipesHandler)
+	router.POST("/recipes", recipesHandler.NewRecipeHandler)
+	router.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
+	//router.DELETE("/recipes/:id", DeleteRecipeHandler)
+	//router.GET("/recipes/search", SearchRecipesHandler)
 
 	router.Run()
 }
