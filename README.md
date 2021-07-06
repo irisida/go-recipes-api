@@ -2,6 +2,8 @@
 
 TL;DR - A RESTful api project built using Gin/Go following the patterns and book `Building distributed application in Gin` by `Mohamed Labouardy` published in 2021 and found on github [here](https://github.com/PacktPublishing/Building-Distributed-Applications-in-Gin)
 
+local run of the project requires a mongoDB container and a Redis container to be running. Once containers are running we can execute a local run with `MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin" MONGO_DATABASE=demo go run *.go`
+
 ## Project Configuration
 
 Project is using the GitFlow approach. You can read more about that [here](https://nvie.com/posts/a-successful-git-branching-model/)
@@ -57,3 +59,13 @@ func init() {
 	// log.Println("inserted recipes:", len(insertManyResult.InsertedIDs))
 }
 ```
+### Redis & benchmarking
+
+- run redis via Docker ` docker run -d --name redis -p 6379:6379 redis:6.0`
+- Run the redis-insight tool via Docker `docker run -d --name redisinsight --link redis -p 8001:8001 redislabs/redisinsight`
+
+Run the apache benchmarking tool
+- without cache `ab -n 2000 -c 100 -g without-cache.data http://localhost:8080/recipes`
+- with cache `ab -n 2000 -c 100 -g with-cache.data http://localhost:8080/recipes`
+- view plot `gnuplot apache-benchmark.p`
+

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -87,6 +88,30 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 
 }
 
+// swagger:operation GET /recipes/{id} recipes FindRecipeById
+// Returns a recipe by matching the ID
+// ---
+// produces:
+// - application/json
+// responses:
+//   200:
+//   description: Successful operation
+func (handler *RecipesHandler) FindRecipeByIdHandler(c *gin.Context) {
+	id := c.Param("id")
+	objectId, _ := primitive.ObjectIDFromHex(id)
+	cur := handler.collection.FindOne(handler.ctx, bson.M{
+		"_id": objectId,
+	})
+	var recipe models.Recipe
+	err := cur.Decode(&recipe)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, recipe)
+}
+
 // swagger:operation POST /recipes recipes NewRecipe
 // Creates a new recipe
 // ---
@@ -102,6 +127,13 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 //   '200':
 //   description: Successful operation
 func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
+	if c.GetHeader("X-API-KEY") != os.Getenv("X_API_KEY") {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "API key not provided or is invalid",
+		})
+		return
+	}
+
 	var recipe models.Recipe
 
 	if err := c.ShouldBindJSON(&recipe); err != nil {
@@ -215,6 +247,13 @@ func (handler *RecipesHandler) DeleteRecipeHandler(c *gin.Context) {
 		})
 		return
 	}
+
+	// clean up the data stored in redis to clear the
+	// cached data now that we have changed it by
+	// deleting data we dont want residual records
+	// to remain searchable in redis.
+	log.Println("Remove data from Redis")
+	handler.redisClient.Del("recipes")
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Recipe has been deleted",
