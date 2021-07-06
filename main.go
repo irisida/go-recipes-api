@@ -36,13 +36,16 @@ import (
 
 var recipesHandler *handlers.RecipesHandler
 
-//var recipes []Recipe
+// AuthMiddleware simple API key equality check function
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.GetHeader("X-API-KEY") != os.Getenv("X_API_KEY") {
+			c.AbortWithStatus(401)
+		}
 
-//mongoDB
-//var ctx context.Context
-//var err error
-
-//var client *mongo.Client
+		c.Next()
+	}
+}
 
 func init() {
 	// mongoDB client connection
@@ -68,12 +71,19 @@ func init() {
 func main() {
 	router := gin.Default()
 
-	// routes
+	// open routes
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
-	router.POST("/recipes", recipesHandler.NewRecipeHandler)
-	router.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
-	router.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
 	router.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
+
+	// authorized routes
+	authorized := router.Group("/")
+	authorized.Use(AuthMiddleware())
+	{
+		authorized.POST("/recipes", recipesHandler.NewRecipeHandler)
+		authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipeHandler)
+		authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipeHandler)
+		authorized.GET("/recipes/:id", recipesHandler.FindRecipeByIdHandler)
+	}
 
 	router.Run()
 }
