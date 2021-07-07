@@ -25,6 +25,8 @@ import (
 
 	handlers "go-recipes-api/handlers"
 
+	"github.com/gin-contrib/sessions"
+	redisStore "github.com/gin-contrib/sessions/redis"
 	"github.com/go-redis/redis"
 
 	"github.com/gin-gonic/gin"
@@ -64,11 +66,15 @@ func init() {
 func main() {
 	router := gin.Default()
 
+	store, _ := redisStore.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
+	router.Use(sessions.Sessions("recipes_api", store))
+
 	// open routes
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 	router.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
 
 	router.POST("/signin", authHandler.SignInHandler)
+	router.POST("/signout", authHandler.SignOutHandler)
 	router.POST("/refresh", authHandler.RefreshHandler)
 
 	// authorized routes
