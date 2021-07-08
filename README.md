@@ -69,3 +69,12 @@ Run the apache benchmarking tool
 - with cache `ab -n 2000 -c 100 -g with-cache.data http://localhost:8080/recipes`
 - view plot `gnuplot apache-benchmark.p`
 
+AUTH0_DOMAIN=DOMAIN.eu.auth0.com  AUTH0_API_IDENTIFIER="https://api.recipes.io" MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin" MONGO_DATABASE=demo go run *.go
+
+
+“AUTH0_DOMAIN=DOMAIN.eu.auth0.com  AUTH0_API_IDENTIFIER="https://api.recipes.io" MONGO_URI="mongodb://admin:password@localhost:27017/test?authSource=admin" MONGO_DATABASE=demo go run *.go”
+
+curl --request POST \
+ --url "http://localhost:8080/recipes" \
+ --header 'Authorization: Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IlFScmFRQWdwWFBPeUFxTHFLRlZaayJ9.eyJpc3MiOiJodHRwczovL2Rldi05NnN3cmV2NS5ldS5hdXRoMC5jb20vIiwic3ViIjoiYVM4TjhMWXQzeEM0RjFhdU9Gd1lSS2dnVnRQanh4TFdAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vYXBpLnJlY2lwZXMuaW8iLCJpYXQiOjE2MjU3NzcxNzgsImV4cCI6MTYyNTg2MzU3OCwiYXpwIjoiYVM4TjhMWXQzeEM0RjFhdU9Gd1lSS2dnVnRQanh4TFciLCJndHkiOiJjbGllbnQtY3JlZGVudGlhbHMifQ.wvYywzzaAGZak4O8vdSMD3lL6fPAKcKKEGv3Xni_Kr_vyCjzHgEr3Gomt--hh6sQb5-Wleh_4yKc2VkQL64SaTNVPSCXZm1_WCih3zAtv9Z4_hHDHFmkJoWmvJ8spijBC_a4Y8MDl9BtNiZXtGfUj4UHHF4Vfu_997oCSC7OTcywOayl_a_GF29_6y3oHTiIfxGMMFvH-P19Bl8aFnXFFXL6x_tb-dvx-06D0MHGNoykUQvkMCVEfYCCk40pBVERtvFprrGmV8wt0gd3o6tXJvTg1nhn8QmUtF6Z-eMANNfhN4k8B6VgcoLrcg8GHwWantBxA5Us5eDsgjJqh6sRSw' \
+ --data '{ "name": "Pizza"}'
