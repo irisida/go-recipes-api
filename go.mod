@@ -3,6 +3,7 @@ module go-recipes-api
 go 1.16
 
 require (
+	github.com/auth0-community/go-auth0 v1.0.0 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/gin-contrib/sessions v0.0.3 // indirect
 	github.com/gin-gonic/gin v1.7.2 // indirect
@@ -10,4 +11,5 @@ require (
 	github.com/go-redis/redis/v8 v8.11.0 // indirect
 	github.com/rs/xid v1.3.0
 	go.mongodb.org/mongo-driver v1.5.4 // indirect
+	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 )

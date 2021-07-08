@@ -7,7 +7,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	//"github.com/irisida/go-recipes-api/models"
@@ -22,9 +21,6 @@ import (
 )
 
 var ctx context.Context
-
-//var client *mongo.Client
-var recipes []models.Recipe
 
 type RecipesHandler struct {
 	collection  *mongo.Collection
@@ -276,21 +272,26 @@ func (handler *RecipesHandler) DeleteRecipeHandler(c *gin.Context) {
 //   '200':
 //   description: Successful operation
 func (handler *RecipesHandler) SearchRecipesHandler(c *gin.Context) {
+
 	tag := c.Query("tag")
-	listOfRecipes := make([]models.Recipe, 0)
 
-	for i := 0; i < len(recipes); i++ {
-		found := false
-		for _, t := range recipes[i].Tags {
-			if strings.EqualFold(t, tag) {
-				found = true
-			}
-		}
+	cur, err := handler.collection.Find(ctx, bson.M{
+		"tags": bson.M{
+			"$eq": tag,
+		},
+	})
 
-		if found {
-			listOfRecipes = append(listOfRecipes, recipes[i])
-		}
+	if err != nil {
+		log.Println(err.Error())
 	}
 
-	c.JSON(http.StatusOK, listOfRecipes)
+	recipes := make([]models.Recipe, 0)
+
+	for cur.Next(handler.ctx) {
+		var recipe models.Recipe
+		cur.Decode(&recipe)
+		recipes = append(recipes, recipe)
+	}
+
+	c.JSON(http.StatusOK, recipes)
 }
